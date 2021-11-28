@@ -1,0 +1,49 @@
+version: "3.2"
+services:
+  glances:
+    image: nicolargo/glances:dev
+    restart: unless-stopped
+    environment:
+      # with influxdb and Grafana as interface
+      - GLANCES_OPT=-q --export influxdb2 --time 10
+    pid: "host"
+    privileged: true
+    network_mode: "host"
+    depends_on:
+      - influxdb
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./cfg/glances/glances.conf:/glances/conf/glances.conf
+
+  influxdb:
+    image: influxdb
+    restart: unless-stopped
+    ports:
+      - 8086:8086
+    env_file:
+      - 'env.influxdb2'
+    volumes:
+      # Data persistency
+      # sudo mkdir -p /srv/docker/influxdb2/data
+      - /srv/docker/influxdb2-grafana/influxdb2/data:/var/lib/influxdb
+      - ./cfg/influxdb2:/etc/influxdb2
+    networks:
+      - grafana_network
+
+  grafana:
+    image: grafana/grafana
+    restart: unless-stopped
+    ports:
+      - 8080:3000
+    user: "1000"
+    volumes:
+      - /srv/docker/influxdb2-grafana/grafana/data:/var/lib/grafana
+    networks:
+      - grafana_network
+
+networks:
+  grafana_network:
+    # name: grafana_network
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: br_grafana
