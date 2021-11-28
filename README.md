@@ -1,9 +1,9 @@
 # Docker-compose files for a simple uptodate
 ## InfluxDB2 + Grafana + Glances
 
-.. image:: ../data/grafana-dashboard1.png
+.. image:: ./data/grafana-dashboard1.png
 
-.. image:: ../data/grafana-dashboard2.png
+.. image:: ./data/grafana-dashboard2.png
 
 Get the stack (only once):
 
